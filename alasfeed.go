@@ -11,8 +11,15 @@ import (
 	"strings"
 )
 
+// alas rss feed urls
 var amazonLinuxFeed = "https://alas.aws.amazon.com/alas.rss"
 var amazonLinux2Feed = "https://alas.aws.amazon.com/AL2/alas.rss"
+
+// regex's used for alas parsing
+var alasStringRegex = regexp.MustCompile("ALAS-[0-9]+-[0-9]+")
+var pkgsRegex = regexp.MustCompile(": (?P<Block>.*$)")
+var priorityRegex = regexp.MustCompile("\\((?P<Block>[a-z]+)\\)")
+var newPkgListRegex = regexp.MustCompile("<pre>(?P<Block>.*?)</pre>")
 
 // ALASResponse is the root of the RSS response from the ALAS feeds
 type ALASResponse struct {
@@ -101,8 +108,7 @@ func (v *Vuln) Expand() (expanded *ExpandedVuln) {
 
 // ALASString returns the ALAS ID for an item in the RSS feed
 func (v *Vuln) ALASString() string {
-	re := regexp.MustCompile("ALAS-[0-9]+-[0-9]+")
-	return re.FindString(v.Title)
+	return alasStringRegex.FindString(v.Title)
 }
 
 // CVEList returns the list of CVEs associated with an item in the RSS feed
@@ -120,15 +126,13 @@ func (v *Vuln) CVEList() (cveList []string) {
 
 // Packages returns the list of packages affected in an item from the RSS feed
 func (v *Vuln) Packages() []string {
-	re := regexp.MustCompile(": (?P<Block>.*$)")
-	pkgs := re.FindStringSubmatch(v.Title)[1]
+	pkgs := pkgsRegex.FindStringSubmatch(v.Title)[1]
 	return strings.Split(pkgs, ", ")
 }
 
 // Priority returns the priority of the item in the RSS feed.
 func (v *Vuln) Priority() string {
-	re := regexp.MustCompile("\\((?P<Block>[a-z]+)\\)")
-	return re.FindStringSubmatch(v.Title)[1]
+	return priorityRegex.FindStringSubmatch(v.Title)[1]
 }
 
 // NewPackages will scrape the description page for the ALAS and return the
@@ -144,8 +148,7 @@ func (v *Vuln) NewPackages() (pkgs []string, err error) {
 	if err != nil {
 		return
 	}
-	re := regexp.MustCompile("<pre>(?P<Block>.*?)</pre>")
-	raw := re.FindStringSubmatch(string(body))[1]
+	raw := newPkgListRegex.FindStringSubmatch(string(body))[1]
 	unescaped := html.UnescapeString(raw)
 	for _, x := range strings.Split(unescaped, "<br />") {
 		if trim := strings.TrimSpace(x); trim != "" {
