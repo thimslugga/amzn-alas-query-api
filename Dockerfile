@@ -23,16 +23,13 @@ RUN upx /app/alas-query-api
 # Use a scratch container so nothing but the app is present
 FROM scratch
 
-# To ensure the aws-sdk can use a shared credentials file (should only be used for testing)
-ENV HOME /
-
 # Copy ca-certificates from build for aws cert verification
 COPY --from=build /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # Copy the binary from build
 COPY --from=build /app/alas-query-api /app/alas-query-api
 
-EXPOSE 8443
+EXPOSE 8080
 
 # Start the server
 CMD ["/app/alas-query-api"]

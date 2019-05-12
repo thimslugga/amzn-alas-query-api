@@ -73,13 +73,14 @@ func (v *ExpandedVuln) ToJSON() (data []byte) {
 // Expand parses and scrapes all the available fields for a vuln. Returns
 // the fully populated ExpandedVuln.
 func (v *Vuln) Expand() (expanded *ExpandedVuln) {
-	expanded = &ExpandedVuln{}
-	expanded.Link = v.Link
-	expanded.PubDate = v.PubDate
-	expanded.ALAS = v.ALASString()
-	expanded.CVEs = v.CVEList()
-	expanded.Packages = v.Packages()
-	expanded.Priority = v.Priority()
+	expanded = &ExpandedVuln{
+		Link:     v.Link,
+		PubDate:  v.PubDate,
+		ALAS:     v.ALASString(),
+		CVEs:     v.CVEList(),
+		Packages: v.Packages(),
+		Priority: v.Priority(),
+	}
 	var err error
 	newPkgs, err := v.NewPackages()
 	if err != nil {
