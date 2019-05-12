@@ -8,6 +8,7 @@ import (
 
 	version "github.com/hashicorp/go-version"
 	"github.com/julienschmidt/httprouter"
+	rpmutils "github.com/sassoftware/go-rpmutils"
 )
 
 // NewRouter creates and returns a new httprouter
@@ -147,14 +148,33 @@ func getExpandedVulnsForPackage(pkgStr string) (expandedVulns []ExpandedVuln, er
 			continue
 		}
 		for _, newPkg := range expanded.NewPackages {
+
+			// If we are comparing the exact same package
 			if newPkg.Arch == pkg.Arch && newPkg.Name == pkg.Name && sameRelease(pkg, newPkg) {
+
+				// Epoch always wins
+				if newPkg.Epoch > pkg.Epoch {
+					log.Println(pkg.Raw, "is older than", newPkg.Raw, "by epoch constraint")
+					expandedVulns = append(expandedVulns, expanded)
+					break
+				}
+
 				newPkgVersion, err := version.NewVersion(newPkg.Version)
 				if err != nil {
 					errors = append(errors, err.Error())
 					continue
 				}
+				// Version wins if epoch is the same
 				if pkgVersion.LessThan(newPkgVersion) {
-					log.Println(pkgVersion, "is less than", newPkgVersion)
+					log.Println(pkg.Raw, "is older than", newPkg.Raw, "by version constraint")
+					expandedVulns = append(expandedVulns, expanded)
+					break
+				}
+
+				// Release wins after everything else
+				// I'll probably switch to use this implementation for the others too
+				if rpmutils.Vercmp(pkg.Release, newPkg.Release) < 0 {
+					log.Println(pkg.Raw, "is older than", newPkg.Raw, "by release constraint")
 					expandedVulns = append(expandedVulns, expanded)
 					break
 				}
