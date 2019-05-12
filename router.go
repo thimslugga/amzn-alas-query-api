@@ -129,7 +129,7 @@ func getExpandedVulnsForPackage(pkgStr string) (expandedVulns []ExpandedVuln, er
 		errors = append(errors, err.Error())
 		return
 	}
-	log.Println("Looking up vulnerabilities for:", pkg.Name, pkg.Version)
+	log.Println("Looking up vulnerabilities for:", pkg.Raw)
 	vulns, err := db.GetVulnsByPackage(pkg.Name)
 	if err != nil {
 		errors = append(errors, err.Error())
