@@ -157,6 +157,8 @@ func getExpandedVulnsForPackage(pkgStr string) (expandedVulns []ExpandedVuln, er
 					log.Println(pkg.Raw, "is older than", newPkg.Raw, "by epoch constraint")
 					expandedVulns = append(expandedVulns, stripNonRelated(pkg, expanded))
 					break
+				} else if pkg.Epoch > newPkg.Epoch {
+					break
 				}
 
 				newPkgVersion, err := version.NewVersion(newPkg.Version)
@@ -169,6 +171,8 @@ func getExpandedVulnsForPackage(pkgStr string) (expandedVulns []ExpandedVuln, er
 					log.Println(pkg.Raw, "is older than", newPkg.Raw, "by version constraint")
 					expandedVulns = append(expandedVulns, stripNonRelated(pkg, expanded))
 					break
+				} else if pkgVersion.GreaterThan(newPkgVersion) {
+					break
 				}
 
 				// Release wins after everything else
@@ -176,6 +180,8 @@ func getExpandedVulnsForPackage(pkgStr string) (expandedVulns []ExpandedVuln, er
 				if rpmutils.Vercmp(pkg.Release, newPkg.Release) < 0 {
 					log.Println(pkg.Raw, "is older than", newPkg.Raw, "by release constraint")
 					expandedVulns = append(expandedVulns, stripNonRelated(pkg, expanded))
+					break
+				} else if rpmutils.Vercmp(pkg.Release, newPkg.Release) > 0 {
 					break
 				}
 			}
