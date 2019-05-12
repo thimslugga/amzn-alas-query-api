@@ -151,7 +151,7 @@ func getExpandedVulnsForPackage(pkgStr string) (expandedVulns []ExpandedVuln, er
 				newPkgVersion, err := version.NewVersion(newPkg.Version)
 				if err != nil {
 					errors = append(errors, err.Error())
-					return
+					continue
 				}
 				if pkgVersion.LessThan(newPkgVersion) {
 					log.Println(pkgVersion, "is less than", newPkgVersion)
