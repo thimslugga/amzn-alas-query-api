@@ -155,7 +155,7 @@ func getExpandedVulnsForPackage(pkgStr string) (expandedVulns []ExpandedVuln, er
 				// Epoch always wins
 				if newPkg.Epoch > pkg.Epoch {
 					log.Println(pkg.Raw, "is older than", newPkg.Raw, "by epoch constraint")
-					expandedVulns = append(expandedVulns, expanded)
+					expandedVulns = append(expandedVulns, stripNonRelated(pkg, expanded))
 					break
 				}
 
@@ -167,7 +167,7 @@ func getExpandedVulnsForPackage(pkgStr string) (expandedVulns []ExpandedVuln, er
 				// Version wins if epoch is the same
 				if pkgVersion.LessThan(newPkgVersion) {
 					log.Println(pkg.Raw, "is older than", newPkg.Raw, "by version constraint")
-					expandedVulns = append(expandedVulns, expanded)
+					expandedVulns = append(expandedVulns, stripNonRelated(pkg, expanded))
 					break
 				}
 
@@ -175,11 +175,33 @@ func getExpandedVulnsForPackage(pkgStr string) (expandedVulns []ExpandedVuln, er
 				// I'll probably switch to use this implementation for the others too
 				if rpmutils.Vercmp(pkg.Release, newPkg.Release) < 0 {
 					log.Println(pkg.Raw, "is older than", newPkg.Raw, "by release constraint")
-					expandedVulns = append(expandedVulns, expanded)
+					expandedVulns = append(expandedVulns, stripNonRelated(pkg, expanded))
 					break
 				}
 			}
 		}
+	}
+	return
+}
+
+// stripNonRelated takes a package being queried, and an expanded potential
+// vulnerability, then strips non-related packages associated with the vuln
+// from the response.
+func stripNonRelated(pkg Package, expanded ExpandedVuln) (stripped ExpandedVuln) {
+	strippedPackages := make([]Package, 0)
+	for _, x := range expanded.NewPackages {
+		if pkg.Name == x.Name && pkg.Arch == x.Arch && sameRelease(pkg, x) {
+			strippedPackages = append(strippedPackages, x)
+		}
+	}
+	stripped = ExpandedVuln{
+		ALAS:        expanded.ALAS,
+		CVEs:        expanded.CVEs,
+		Packages:    expanded.Packages,
+		NewPackages: strippedPackages,
+		Priority:    expanded.Priority,
+		Link:        expanded.Link,
+		PubDate:     expanded.PubDate,
 	}
 	return
 }

@@ -505,81 +505,11 @@ bash-4.2> rpm -qa | jq --raw-input --slurp 'split("\n") | map(select(. != ""))' 
 Obviously this is a bad example as there are no known vulnerabilities in the docker container. However, if we had a list of packages with known vulnerabilities, we'd get better output.
 
 ```shell
-bash-4.2> curl -X GET localhost:8080/vulns --data '["gnupg2-2.0.21-5.amzn2.0.3.x86_64"]'
+bash-4.2> curl -X GET localhost:8080/vulns --data '["gnupg2-2.0.22-5.amzn2.0.2.x86_64"]'
 {
   "results": {
-    "gnupg2-2.0.21-5.amzn2.0.3.x86_64": {
+    "gnupg2-2.0.22-5.amzn2.0.2.x86_64": {
       "vulns": [
-        {
-          "alas": "ALAS-2018-1045",
-          "cves": [
-            "CVE-2018-12020"
-          ],
-          "packages": [
-            "gnupg2"
-          ],
-          "priority": "important",
-          "newPackages": [
-            {
-              "name": "gnupg2",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.2",
-              "arch": "i686",
-              "raw": "gnupg2-2.0.22-5.amzn2.0.2.i686"
-            },
-            {
-              "name": "gnupg2-smime",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.2",
-              "arch": "i686",
-              "raw": "gnupg2-smime-2.0.22-5.amzn2.0.2.i686"
-            },
-            {
-              "name": "gnupg2-debuginfo",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.2",
-              "arch": "i686",
-              "raw": "gnupg2-debuginfo-2.0.22-5.amzn2.0.2.i686"
-            },
-            {
-              "name": "gnupg2",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.2",
-              "arch": "src",
-              "raw": "gnupg2-2.0.22-5.amzn2.0.2.src"
-            },
-            {
-              "name": "gnupg2",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.2",
-              "arch": "x86_64",
-              "raw": "gnupg2-2.0.22-5.amzn2.0.2.x86_64"
-            },
-            {
-              "name": "gnupg2-smime",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.2",
-              "arch": "x86_64",
-              "raw": "gnupg2-smime-2.0.22-5.amzn2.0.2.x86_64"
-            },
-            {
-              "name": "gnupg2-debuginfo",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.2",
-              "arch": "x86_64",
-              "raw": "gnupg2-debuginfo-2.0.22-5.amzn2.0.2.x86_64"
-            }
-          ],
-          "link": "https://alas.aws.amazon.com/AL2/ALAS-2018-1045.html",
-          "pubDate": "Thu, 09 Aug 2018 23:13:00 GMT"
-        },
         {
           "alas": "ALAS-2019-1203",
           "cves": [
@@ -595,80 +525,8 @@ bash-4.2> curl -X GET localhost:8080/vulns --data '["gnupg2-2.0.21-5.amzn2.0.3.x
               "epoch": "0",
               "version": "2.0.22",
               "release": "5.amzn2.0.3",
-              "arch": "aarch64",
-              "raw": "gnupg2-2.0.22-5.amzn2.0.3.aarch64"
-            },
-            {
-              "name": "gnupg2-smime",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.3",
-              "arch": "aarch64",
-              "raw": "gnupg2-smime-2.0.22-5.amzn2.0.3.aarch64"
-            },
-            {
-              "name": "gnupg2-debuginfo",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.3",
-              "arch": "aarch64",
-              "raw": "gnupg2-debuginfo-2.0.22-5.amzn2.0.3.aarch64"
-            },
-            {
-              "name": "gnupg2",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.3",
-              "arch": "i686",
-              "raw": "gnupg2-2.0.22-5.amzn2.0.3.i686"
-            },
-            {
-              "name": "gnupg2-smime",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.3",
-              "arch": "i686",
-              "raw": "gnupg2-smime-2.0.22-5.amzn2.0.3.i686"
-            },
-            {
-              "name": "gnupg2-debuginfo",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.3",
-              "arch": "i686",
-              "raw": "gnupg2-debuginfo-2.0.22-5.amzn2.0.3.i686"
-            },
-            {
-              "name": "gnupg2",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.3",
-              "arch": "src",
-              "raw": "gnupg2-2.0.22-5.amzn2.0.3.src"
-            },
-            {
-              "name": "gnupg2",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.3",
               "arch": "x86_64",
               "raw": "gnupg2-2.0.22-5.amzn2.0.3.x86_64"
-            },
-            {
-              "name": "gnupg2-smime",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.3",
-              "arch": "x86_64",
-              "raw": "gnupg2-smime-2.0.22-5.amzn2.0.3.x86_64"
-            },
-            {
-              "name": "gnupg2-debuginfo",
-              "epoch": "0",
-              "version": "2.0.22",
-              "release": "5.amzn2.0.3",
-              "arch": "x86_64",
-              "raw": "gnupg2-debuginfo-2.0.22-5.amzn2.0.3.x86_64"
             }
           ],
           "link": "https://alas.aws.amazon.com/AL2/ALAS-2019-1203.html",
