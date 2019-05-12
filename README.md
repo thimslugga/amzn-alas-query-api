@@ -57,12 +57,11 @@ There is currently just a single endpoint available: `GET /vulns`.
 This endpoint expects a `JSON` payload in the following format:
 
 ```js
-{
-  "packages": [
-    "amazon-linux-extras-1.6.7-1.amzn2.noarch"
-    // ...
-  ]
-}
+// Just a list of RPM package strings
+[
+  "amazon-linux-extras-1.6.7-1.amzn2.noarch"
+  // ...
+]
 ```
 
 The package strings are expected to be in RPM format. This is the format you get when you do `rpm -qa`.
