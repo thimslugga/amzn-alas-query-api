@@ -50,6 +50,7 @@ func notReady(w http.ResponseWriter) {
 
 // badRequest is called for any error raised during the processing of a request
 func badRequest(w http.ResponseWriter, err error) {
+	log.Println(err)
 	res, _ := json.MarshalIndent(
 		ErrorResponse{
 			Error: err.Error(),
@@ -70,6 +71,7 @@ func getVulns(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		log.Println(err)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
 	}
@@ -100,6 +102,7 @@ func makeGetVulnsResponse(w http.ResponseWriter, input []string) {
 		if len(errors) == 0 {
 			results.Errors = []string{}
 		} else {
+			log.Println(errors)
 			results.Errors = errors
 		}
 		res.Results[x] = results
