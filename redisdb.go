@@ -106,9 +106,9 @@ func (db *Database) AddVulns(vulns map[string]interface{}, pkgMap map[string][]s
 		return
 	}
 	for k, v := range pkgMap {
-		zs := make([]redis.Z, 0)
+		zs := make([]*redis.Z, 0)
 		for _, x := range v {
-			zs = append(zs, redis.Z{Member: x, Score: 0})
+			zs = append(zs, &redis.Z{Member: x, Score: 0})
 		}
 		if err = db.Client.ZAddNX(k, zs...).Err(); err != nil {
 			return err
