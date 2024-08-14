@@ -1,29 +1,43 @@
-version: '3'
+version: '3.9'
+
+volumes:
+  redis-data:
+    driver: local
+
+networks:
+  amzn-alas-api:
+    driver: bridge
+
 services:
+
   redis:
-    image: redis
-    command: ["redis-server", "--appendonly", "yes"]
+    container_name: redis
+    image: docker.io/bitnami/redis:latest
+    command: /opt/bitnami/scripts/redis/run.sh --appendonly yes --loglevel warning
+    environment:
+      REDIS_DATABASE: "${REDIS_DATABASE:-amzn-alas-api}"
+      REDIS_PASSWORD: "${REDIS_PASSWORD:-redis_is_not_secure}"
+      ALLOW_EMPTY_PASSWORD: "yes"
     ports:
-      - "6379:6379"
-    networks:
-      - alas
+      - "127.0.0.1:6379:6379"
     volumes:
-      - redis-data:/data
-  api:
+      - 'redis-data:/bitnami/redis/data:rw'
+    networks:
+      - amzn-alas-api
+    restart: always
+
+  amzn-alas-api:
+    container_name: amzn-alas-api
     build: "../"
     environment:
-      LISTEN_ADDR: "${LISTEN_ADDR}"
-      CACHE_TTL: "${CACHE_TTL}"
-      REDIS_HOST: "${REDIS_HOST}"
-      REDIS_PASSWORD: "${REDIS_PASSWORD}"
-      REDIS_DATABASE: "${REDIS_DATABASE}"
+      LISTEN_ADDR: "${LISTEN_ADDR:-127.0.0.1}"
+      CACHE_TTL: "${CACHE_TTL:-3600}"
+      REDIS_HOST: "${REDIS_HOST:-redis}"
+      REDIS_PASSWORD: "${REDIS_PASSWORD-redis_is_not_secure}"
+      REDIS_DATABASE: "${REDIS_DATABASE-amzn-alas-api}"
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     depends_on:
       - redis
     networks:
-      - alas
-networks:
-  alas:
-volumes:
-  redis-data:
+      - amzn-alas-api

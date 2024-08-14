@@ -2,7 +2,7 @@ package main
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 
@@ -69,7 +69,7 @@ func getVulns(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 		notReady(w)
 		return
 	}
-	body, err := ioutil.ReadAll(r.Body)
+	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println(err)
 		http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)

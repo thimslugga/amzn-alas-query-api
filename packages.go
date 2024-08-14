@@ -37,10 +37,16 @@ func NewPackageFromString(pkgstr string) (pkg Package, err error) {
 
 // sameRelease returns whether two packages are from the same amazonlinux release.
 func sameRelease(pkgA Package, pkgB Package) bool {
-	if strings.Contains(pkgA.Release, "amzn1") && strings.Contains(pkgB.Release, "amzn1") {
+	if strings.Contains(pkgA.Release, "amzn2023") && strings.Contains(pkgB.Release, "amzn2023") {
+		return true
+	}
+	if strings.Contains(pkgA.Release, "amzn2023") && strings.Contains(pkgB.Release, "amzn2022") {
 		return true
 	}
 	if strings.Contains(pkgA.Release, "amzn2") && strings.Contains(pkgB.Release, "amzn2") {
+		return true
+	}
+	if strings.Contains(pkgA.Release, "amzn1") && strings.Contains(pkgB.Release, "amzn1") {
 		return true
 	}
 	return false
@@ -50,7 +56,7 @@ func sameRelease(pkgA Package, pkgB Package) bool {
 func popArch(raw string) (popped string, arch string, err error) {
 	popped, arch, err = popDelim(raw, ".")
 	if err != nil {
-		err = fmt.Errorf("Could not parse arch from package string: %s", err)
+		err = fmt.Errorf("Unable to parse arch from package string: %s", err)
 	}
 	return
 }
@@ -60,7 +66,7 @@ func popArch(raw string) (popped string, arch string, err error) {
 func popRelease(noArch string) (popped string, release string, err error) {
 	popped, release, err = popDelim(noArch, "-")
 	if err != nil {
-		err = fmt.Errorf("Could not parse release from package string: %s", err)
+		err = fmt.Errorf("Unable to parse release from package string: %s", err)
 	}
 	return
 }
@@ -70,7 +76,7 @@ func popRelease(noArch string) (popped string, release string, err error) {
 func popVersion(noArchRelease string) (popped string, version string, err error) {
 	popped, version, err = popDelim(noArchRelease, "-")
 	if err != nil {
-		err = fmt.Errorf("Could not parse version from package string: %s", err)
+		err = fmt.Errorf("Unable to parse version from package string: %s", err)
 	}
 	return
 }

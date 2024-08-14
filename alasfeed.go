@@ -4,20 +4,20 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"html"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"regexp"
 	"strings"
 )
 
-// alas rss feed urls
-//var amazonLinuxFeed = "https://alas.aws.amazon.com/alas.rss"
-var amazonLinux2Feed = "https://alas.aws.amazon.com/AL2/alas.rss"
-//var amazonLinux2023Feed = "https://alas.aws.amazon.com/AL2022/alas.rss"
+// ALAS RSS Feed URLs
+// var amazonLinuxFeed = "https://alas.aws.amazon.com/alas.rss"
+// var amazonLinux2Feed = "https://alas.aws.amazon.com/AL2/alas.rss"
+// var amazonLinux2022Feed = "https://alas.aws.amazon.com/AL2022/alas.rss"
 var amazonLinux2023Feed = "https://alas.aws.amazon.com/AL2023/alas.rss"
 
-// regex used for alas parsing
+// regex used for parsing ALAS
 var alasStringRegex = regexp.MustCompile("ALAS-[0-9]+-[0-9]+")
 var pkgsRegex = regexp.MustCompile(": (?P<Block>.*$)")
 var priorityRegex = regexp.MustCompile("\\((?P<Block>[a-z]+)\\)")
@@ -40,22 +40,24 @@ type Channel struct {
 
 // Vuln is a single `item` in the RSS response
 type Vuln struct {
-	Title       string `xml:"title"`
-	Description string `xml:"description"`
-	PubDate     string `xml:"pubDate"`
-	GUID        string `xml:"guid"`
-	Link        string `xml:"link"`
+	Title         string `xml:"title"`
+	Description   string `xml:"description"`
+	PubDate       string `xml:"pubDate"`
+	LastBuildDate string `xml:"lastBuildDate"`
+	GUID          string `xml:"guid"`
+	Link          string `xml:"link"`
 }
 
 // ExpandedVuln is a Vuln with all of it's fields scraped already.
 type ExpandedVuln struct {
-	ALAS        string    `json:"alas"`
-	CVEs        []string  `json:"cves"`
-	Packages    []string  `json:"packages"`
-	Priority    string    `json:"priority"`
-	NewPackages []Package `json:"newPackages"`
-	Link        string    `json:"link"`
-	PubDate     string    `json:"pubDate"`
+	ALAS          string    `json:"alas"`
+	CVEs          []string  `json:"cves"`
+	Packages      []string  `json:"packages"`
+	Priority      string    `json:"priority"`
+	NewPackages   []Package `json:"newPackages"`
+	Link          string    `json:"link"`
+	PubDate       string    `json:"pubDate"`
+	LastBuildDate string    `json:"lastBuildDate"`
 }
 
 // GetALASFeed returns the unmarshaled feed for a given URL
@@ -65,7 +67,7 @@ func GetALASFeed(endpoint string) (feed ALASResponse, err error) {
 		return
 	}
 	defer resp.Body.Close()
-	data, err := ioutil.ReadAll(resp.Body)
+	data, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}
@@ -79,27 +81,28 @@ func (v *ExpandedVuln) ToJSON() (data []byte) {
 	return
 }
 
-// Expand parses and scrapes all the available fields for a vuln. Returns
-// the fully populated ExpandedVuln.
+// Expand parses and scrapes all the available fields for a vuln.
+// Returns the fully populated ExpandedVuln.
 func (v *Vuln) Expand() (expanded *ExpandedVuln) {
 	expanded = &ExpandedVuln{
-		Link:     v.Link,
-		PubDate:  v.PubDate,
-		ALAS:     v.ALASString(),
-		CVEs:     v.CVEList(),
-		Packages: v.Packages(),
-		Priority: v.Priority(),
+		Link:          v.Link,
+		PubDate:       v.PubDate,
+		LastBuildDate: v.LastBuildDate,
+		ALAS:          v.ALASString(),
+		CVEs:          v.CVEList(),
+		Packages:      v.Packages(),
+		Priority:      v.Priority(),
 	}
 	var err error
 	newPkgs, err := v.NewPackages()
 	if err != nil {
-		log.Printf("WARNING: Could not parse new packages for %s\n", expanded.ALAS)
+		log.Printf("WARNING: Unable to parse new packages for %s\n", expanded.ALAS)
 	} else {
 		expanded.NewPackages = make([]Package, 0)
 		for _, pkg := range newPkgs {
 			parsed, err := NewPackageFromString(pkg)
 			if err != nil {
-				log.Printf("WARNING: Could not parse NEVRA from %s: %s\n", pkg, err)
+				log.Printf("WARNING: Unable to parse NEVRA from %s: %s\n", pkg, err)
 				continue
 			}
 			expanded.NewPackages = append(expanded.NewPackages, parsed)
@@ -146,7 +149,7 @@ func (v *Vuln) NewPackages() (pkgs []string, err error) {
 		return
 	}
 	defer resp.Body.Close()
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return
 	}

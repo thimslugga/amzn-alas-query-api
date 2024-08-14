@@ -9,7 +9,7 @@ func main() {
 	// Get the config, global var in config.go
 	config = NewConfig()
 
-	log.Println("Initializing redis database")
+	log.Println("Initializing Redis Database..")
 	var err error
 
 	// db is a global in redisdb.go
@@ -23,6 +23,6 @@ func main() {
 
 	// Listen and serve requests
 	router := NewRouter()
-	log.Println("Starting to serve requests on", config.ListenAddr)
+	log.Println("Serving HTTP requests on:", config.ListenAddr)
 	log.Fatal(http.ListenAndServe(config.ListenAddr, router))
 }

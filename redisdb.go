@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"time"
-	"github.com/go-redis/redis/v7"
+
+	"github.com/redis/go-redis"
 )
 
 // Hash key for the full ALAS cache in Redis
