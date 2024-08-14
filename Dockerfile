@@ -15,10 +15,10 @@ ENV GOARCH=amd64
 # Disable CGO so we can use a scratch container
 ENV CGO_ENABLED=0
 
+RUN go mod init github.com/thimslugga/amzn-alas-query-api
 RUN go get -d ./...
 RUN go build -o /app/alas-query-api .
 RUN upx /app/alas-query-api
-
 
 # Use a scratch container so nothing but the app is present
 FROM scratch
