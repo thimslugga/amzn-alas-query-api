@@ -12,10 +12,12 @@ import (
 )
 
 // alas rss feed urls
-var amazonLinuxFeed = "https://alas.aws.amazon.com/alas.rss"
+//var amazonLinuxFeed = "https://alas.aws.amazon.com/alas.rss"
 var amazonLinux2Feed = "https://alas.aws.amazon.com/AL2/alas.rss"
+//var amazonLinux2023Feed = "https://alas.aws.amazon.com/AL2022/alas.rss"
+var amazonLinux2023Feed = "https://alas.aws.amazon.com/AL2023/alas.rss"
 
-// regex's used for alas parsing
+// regex used for alas parsing
 var alasStringRegex = regexp.MustCompile("ALAS-[0-9]+-[0-9]+")
 var pkgsRegex = regexp.MustCompile(": (?P<Block>.*$)")
 var priorityRegex = regexp.MustCompile("\\((?P<Block>[a-z]+)\\)")
